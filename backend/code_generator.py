@@ -26,7 +26,7 @@ class CodeGenerator:
                     },
                     {"role": "user", "content": prompt}
                 ],
-                temperature=0.5  # Lower for more deterministic code
+                temperature=0.5
             )
             return self._clean_response(response.choices[0].message.content)
         except Exception as e:
