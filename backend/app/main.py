@@ -9,10 +9,9 @@ from app.code_generator import CodeGenerator
 
 app = FastAPI()
 
-# Add CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],  # Frontend URL
+    allow_origins=["http://localhost:3000"], 
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -22,6 +21,11 @@ class AudioRequest(BaseModel):
     audio_data: str  
     audio_format: str = "webm"
     language: str = "python"  
+
+@app.get("/health")
+async def health_check():
+    """Health check endpoint"""
+    return {"status": "healthy", "service": "codevoice-backend"}
 
 @app.post("/transcribe")
 async def transcribe_audio(request: AudioRequest):

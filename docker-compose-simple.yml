@@ -1,0 +1,59 @@
+version: '3.8'
+
+services:
+  # API Gateway
+  api-gateway:
+    build:
+      context: ./services/api-gateway
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    depends_on:
+      - speech-service
+      - code-service
+    networks:
+      - codevoice-network
+
+  # Speech Service
+  speech-service:
+    build:
+      context: ./services/speech-service
+      dockerfile: Dockerfile
+    environment:
+      - REDIS_URL=redis://redis:6379
+    ports:
+      - "8001:8001"
+    depends_on:
+      - redis
+    networks:
+      - codevoice-network
+
+  # Code Generation Service
+  code-service:
+    build:
+      context: ./services/code-service
+      dockerfile: Dockerfile
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - REDIS_URL=redis://redis:6379
+    ports:
+      - "8002:8002"
+    depends_on:
+      - redis
+    networks:
+      - codevoice-network
+
+  # Redis Cache (simplified)
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    networks:
+      - codevoice-network
+
+volumes:
+  redis_data:
+
+networks:
+  codevoice-network:
+    driver: bridge 
