@@ -10,7 +10,8 @@ export async function POST(request: NextRequest) {
     console.log(`📦 Audio data size: ${audio ? audio.length : 0} characters (base64)`)
     console.log(`🔤 Selected language: ${language}`)
     
-    const backendResponse = await fetch('http://localhost:8000/transcribe', {
+    // First, transcribe the audio
+    const transcriptionResponse = await fetch('http://localhost:8000/api/speech/transcribe', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -18,18 +19,45 @@ export async function POST(request: NextRequest) {
       body: JSON.stringify({
         audio_data: audio,
         audio_format: 'webm',
-        language: language
+        language: 'en'  // Speech service uses 'en' for English
       })
     })
     
-    if (!backendResponse.ok) {
-      throw new Error(`Backend error: ${backendResponse.status}`)
+    if (!transcriptionResponse.ok) {
+      throw new Error(`Speech service error: ${transcriptionResponse.status}`)
     }
     
-    const result = await backendResponse.json()
-    console.log('✅ Backend response:', result)
+    const transcriptionResult = await transcriptionResponse.json()
+    console.log('📝 Transcription result:', transcriptionResult)
     
-    return NextResponse.json(result)
+    // Then, generate code from the transcript
+    let code = ""
+    if (transcriptionResult.transcript && transcriptionResult.transcript.length > 3) {
+      const codeResponse = await fetch('http://localhost:8000/api/code/generate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          prompt: transcriptionResult.transcript,
+          language: language
+        })
+      })
+      
+      if (codeResponse.ok) {
+        const codeResult = await codeResponse.json()
+        code = codeResult.code
+        console.log('🤖 Code generation result:', codeResult)
+      } else {
+        console.error('❌ Code generation failed:', codeResponse.status)
+      }
+    }
+    
+    return NextResponse.json({
+      transcript: transcriptionResult.transcript,
+      code: code,
+      language: language
+    })
     
   } catch (error) {
     console.error('❌ Transcription error:', error)
