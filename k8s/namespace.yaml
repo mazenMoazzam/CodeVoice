@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: codevoice
+  labels:
+    name: codevoice
+    app: codevoice-platform 

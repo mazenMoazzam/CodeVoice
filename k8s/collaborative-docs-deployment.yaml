@@ -1,0 +1,70 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: collaborative-docs-service
+  namespace: codevoice
+  labels:
+    app: collaborative-docs-service
+    tier: backend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: collaborative-docs-service
+  template:
+    metadata:
+      labels:
+        app: collaborative-docs-service
+        tier: backend
+    spec:
+      containers:
+      - name: collaborative-docs-service
+        image: codevoice/collaborative-docs-service:latest
+        ports:
+        - containerPort: 8006
+        env:
+        - name: REDIS_URL
+          valueFrom:
+            configMapKeyRef:
+              name: codevoice-config
+              key: REDIS_URL
+        - name: POSTGRES_URL
+          valueFrom:
+            configMapKeyRef:
+              name: codevoice-config
+              key: POSTGRES_URL
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "500m"
+          limits:
+            memory: "1Gi"
+            cpu: "1000m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8006
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8006
+          initialDelaySeconds: 5
+          periodSeconds: 5
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: collaborative-docs-service
+  namespace: codevoice
+  labels:
+    app: collaborative-docs-service
+spec:
+  selector:
+    app: collaborative-docs-service
+  ports:
+  - port: 8006
+    targetPort: 8006
+    protocol: TCP
+  type: ClusterIP 

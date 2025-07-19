@@ -1,57 +1,36 @@
 'use client';
 
-import { useState } from 'react';
-import VoiceButton from '@/components/VoiceButton';
-import ServiceTabs from '@/components/ServiceTabs';
+import ServiceTabs from '../components/ServiceTabs';
 
 export default function Home() {
-  const [activeTab, setActiveTab] = useState('voice-to-code');
-
-  const renderActiveService = () => {
-    switch (activeTab) {
-      case 'voice-to-code':
-        return <VoiceButton />;
-      case 'code-review':
-        return (
-          <div className="max-w-4xl mx-auto p-6">
-            <div className="bg-white rounded-lg shadow-lg p-8 text-center">
-              <h2 className="text-2xl font-bold mb-4 text-gray-800">🔍 Code Review Service</h2>
-              <p className="text-gray-600 mb-6">AI-powered code analysis and review coming soon!</p>
-              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-                <p className="text-yellow-800 text-sm">
-                  This service will provide automated code review, security analysis, and performance optimization suggestions.
-                </p>
-              </div>
-            </div>
-          </div>
-        );
-      case 'analytics':
-        return (
-          <div className="max-w-4xl mx-auto p-6">
-            <div className="bg-white rounded-lg shadow-lg p-8 text-center">
-              <h2 className="text-2xl font-bold mb-4 text-gray-800">📊 Analytics Service</h2>
-              <p className="text-gray-600 mb-6">Usage metrics and performance analytics coming soon!</p>
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                <p className="text-blue-800 text-sm">
-                  This service will track usage patterns, code generation statistics, and system performance metrics.
-                </p>
-              </div>
-            </div>
-          </div>
-        );
-      default:
-        return <VoiceButton />;
-    }
-  };
-
   return (
-    <main className="min-h-screen p-6 lg:p-24">
-      <div className="max-w-7xl mx-auto">
-        <h1 className="text-4xl font-bold mb-8 text-center">CodeVoice AI Platform</h1>
-        
-        <ServiceTabs activeTab={activeTab} onTabChange={setActiveTab} />
-        
-        {renderActiveService()}
+    <main className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
+      {/* Header */}
+      <div className="bg-white shadow-sm border-b">
+        <div className="max-w-7xl mx-auto px-6 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+                <span className="text-white font-bold text-xl">CV</span>
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold text-gray-900">CodeVoice</h1>
+                <p className="text-sm text-gray-600">AI-Powered Voice Development Platform</p>
+              </div>
+            </div>
+            <div className="flex items-center space-x-4">
+              <div className="text-sm text-gray-500">
+                <span className="inline-block w-2 h-2 bg-green-500 rounded-full mr-2"></span>
+                All services online
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <div className="py-8">
+        <ServiceTabs />
       </div>
     </main>
   );
